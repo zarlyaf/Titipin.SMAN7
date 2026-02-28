@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Titipin 7 - SMAN 7 Semarang</title>
+    <style>
+        /* Modern Minimalist Green Theme */
+        :root {
+            --primary-green: #1a5d1a; /* Hijau Sekolah SMAN 7 */
+            --secondary-green: #2d8b2d;
+            --light-bg: #f4f7f4;
+            --text-dark: #2c3e50;
+            --white: #ffffff;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+            padding: 40px 20px;
+            background: var(--white);
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+            position: relative;
+        }
+
+        /* Dekorasi Hijau Minimalis */
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(to right, var(--primary-green), var(--secondary-green));
+            border-radius: 24px 24px 0 0;
+        }
+
+        .logo-placeholder {
+            width: 80px;
+            height: 80px;
+            background: var(--primary-green);
+            border-radius: 20px;
+            margin: 0 auto 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 32px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(26, 93, 26, 0.3);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: var(--primary-green);
+            margin-bottom: 8px;
+            letter-spacing: -1px;
+            font-weight: 800;
+        }
+
+        p.subtitle {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 40px;
+            line-height: 1.5;
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 18px 24px;
+            border-radius: 16px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: none;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        /* Tombol Saya Penitip */
+        .btn-penitip {
+            background-color: var(--primary-green);
+            color: var(--white);
+            box-shadow: 0 4px 15px rgba(26, 93, 26, 0.2);
+        }
+
+        .btn-penitip:hover {
+            background-color: var(--secondary-green);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(26, 93, 26, 0.3);
+        }
+
+        /* Tombol Saya Pembeli */
+        .btn-pembeli {
+            background-color: var(--white);
+            color: var(--primary-green);
+            border: 2px solid var(--primary-green);
+        }
+
+        .btn-pembeli:hover {
+            background-color: #f0f7f0;
+            transform: translateY(-3px);
+        }
+
+        /* Tombol Admin */
+        .btn-admin {
+            background-color: transparent;
+            color: #999;
+            font-size: 0.9rem;
+            margin-top: 20px;
+            font-weight: 500;
+        }
+
+        .btn-admin:hover {
+            color: var(--primary-green);
+            text-decoration: underline;
+        }
+
+        .footer {
+            margin-top: 40px;
+            font-size: 0.8rem;
+            color: #ccc;
+        }
+
+        /* Loading Overlay */
+        k#loader {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            color: var(--primary-green);
+        }
+
+        @media (max-width: 400px) {
+            h1 { font-size: 2rem; }
+            .container { padding: 30px 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loader">Mohon tunggu...</div>
+
+    <div class="container">
+        <div class="logo-placeholder">7</div>
+        <h1>Titipin 7</h1>
+        <p class="subtitle">Web Titip Jual & COD Khusus Siswa <br><strong>SMAN 7 Semarang</strong></p>
+
+        <div class="button-group">
+            <button class="btn btn-penitip" onclick="navigateTo('penitip')">
+                Saya Penitip
+            </button>
+            
+            <button class="btn btn-pembeli" onclick="navigateTo('pembeli')">
+                Saya Pembeli
+            </button>
+
+            <button class="btn btn-admin" onclick="navigateTo('admin')">
+                Admin Login
+            </button>
+        </div>
+
+        <div class="footer">
+            &copy; 2026 Titipin 7 - OSIS SMAN 7 Semarang
+        </div>
+    </div>
+
+    <script>
+        /**
+         * Navigasi halaman menggunakan google.script.run
+         */
+        function navigateTo(page) {
+            // Tampilkan loader
+            const loader = document.getElementById('loader');
+            loader.style.display = 'flex';
+            
+            // Cek apakah objek google tersedia (hanya ada jika dijalankan di Apps Script)
+            if (typeof google !== 'undefined' && google.script && google.script.run) {
+                google.script.run
+                    .withSuccessHandler(function(url) {
+                        window.open(url, '_top');
+                    })
+                    .withFailureHandler(function(msg) {
+                        loader.style.display = 'none';
+                        alert("Gagal memuat halaman: " + msg);
+                    })
+                    .getScriptUrl(page); 
+            } else {
+                // Fallback untuk pengujian di luar Apps Script
+                console.warn("Objek 'google.script.run' tidak ditemukan. Pastikan kode dijalankan di Google Apps Script.");
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                    alert("Mode Preview: Navigasi ke hamanan '" + page + "' dipicu, tetapi google.script.run tidak tersedia di lingkungan ini.");
+                }, 500);
+            }
+        }
+    </script>
+</body>
+</html>
