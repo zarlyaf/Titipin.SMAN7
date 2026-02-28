@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Penitip - Titipin 7</title>
+    <style>
+        :root {
+            --primary-green: #1a5d1a;
+            --secondary-green: #2d8b2d;
+            --light-bg: #f4f7f4;
+            --text-dark: #2c3e50;
+            --white: #ffffff;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            color: var(--text-dark);
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .card {
+            background: var(--white);
+            width: 100%;
+            max-width: 500px;
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+            padding: 30px;
+            height: fit-content;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .btn-back {
+            background: none;
+            border: 2px solid var(--primary-green);
+            color: var(--primary-green);
+            padding: 8px 12px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        h2 {
+            color: var(--primary-green);
+            font-size: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            border: 1px solid #ddd;
+            outline: none;
+            transition: border 0.3s;
+            font-size: 1rem;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--primary-green);
+        }
+
+        .btn-submit {
+            width: 100%;
+            background: var(--primary-green);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: transform 0.2s, background 0.3s;
+        }
+
+        .btn-submit:hover {
+            background: var(--secondary-green);
+            transform: translateY(-2px);
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 24px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .qris-img {
+            width: 100%;
+            max-width: 250px;
+            margin: 20px 0;
+            border: 2px solid #eee;
+            border-radius: 12px;
+        }
+
+        .payment-info {
+            background: #fff9db;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            color: #856404;
+        }
+
+        .file-upload {
+            border: 2px dashed var(--primary-green);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        #loader {
+            display: none;
+            margin-top: 10px;
+            font-weight: bold;
+            color: var(--primary-green);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card" id="formCard">
+        <div class="header">
+            <button class="btn-back" onclick="goHome()">←</button>
+            <h2>Titip Produk Baru</h2>
+        </div>
+
+        <div class="form-group">
+            <label>Nama Produk</label>
+            <input type="text" id="namaProduk" placeholder="Contoh: Es Teh Manis">
+        </div>
+
+        <div class="form-group">
+            <label>Kategori</label>
+            <select id="kategori">
+                <option value="Jajan">Jajan</option>
+                <option value="Barang">Barang</option>
+                <option value="Preloved">Preloved</option>
+            </select>
+        </div>
+
+        <div class="grid" style="display: flex; gap: 15px;">
+            <div class="form-group" style="flex: 2;">
+                <label>Harga (Rp)</label>
+                <input type="number" id="harga" placeholder="2000">
+            </div>
+            <div class="form-group" style="flex: 1;">
+                <label>Stok</label>
+                <input type="number" id="stok" placeholder="10">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Nama Kamu (Penitip)</label>
+            <input type="text" id="namaPenitip" placeholder="Nama Lengkap">
+        </div>
+
+        <div class="form-group">
+            <label>Nomor WhatsApp</label>
+            <input type="text" id="waPenitip" placeholder="0812xxxx">
+        </div>
+
+        <button class="btn-submit" onclick="submitProduk()">Daftarkan & Bayar</button>
+        <div id="loader">Memproses data...</div>
+    </div>
+
+    <!-- Modal QRIS & Konfirmasi Bayar -->
+    <div class="modal-overlay" id="modalPayment">
+        <div class="modal-content">
+            <h3>Pembayaran Biaya Titip</h3>
+            <div class="payment-info">
+                Silakan bayar biaya titip Rp2.000
+            </div>
+            <p style="font-size: 0.8rem; color: #666;">Scan QRIS di bawah ini:</p>
+            
+            <img src="" id="qrisImage" class="qris-img" alt="[QRIS Pembayaran]">
+            
+            <div class="file-upload">
+                <label>Upload Bukti Transfer</label>
+                <input type="file" id="buktiTf" accept="image/*">
+            </div>
+
+            <button class="btn-submit" onclick="submitPayment()">Konfirmasi Pembayaran</button>
+            <p id="paymentStatus" style="margin-top:10px; font-weight:bold;"></p>
+        </div>
+    </div>
+
+    <script>
+        let currentProductId = "";
+
+        function goHome() {
+            if (typeof google !== 'undefined') {
+                google.script.run.withSuccessHandler(url => window.open(url, '_top')).getScriptUrl();
+            } else {
+                window.location.href = "?page=index";
+            }
+        }
+
+        function submitProduk() {
+            const data = {
+                namaProduk: document.getElementById('namaProduk').value,
+                kategori: document.getElementById('kategori').value,
+                harga: document.getElementById('harga').value,
+                stok: document.getElementById('stok').value,
+                namaPenitip: document.getElementById('namaPenitip').value,
+                waPenitip: document.getElementById('waPenitip').value
+            };
+
+            if (!data.namaProduk || !data.harga || !data.namaPenitip) {
+                alert("Harap isi semua kolom!");
+                return;
+            }
+
+            document.getElementById('loader').style.display = 'block';
+
+            google.script.run
+                .withSuccessHandler(function(response) {
+                    document.getElementById('loader').style.display = 'none';
+                    if (response.success) {
+                        currentProductId = response.productId;
+                        showPaymentModal();
+                    } else {
+                        alert("Error: " + response.message);
+                    }
+                })
+                .addProduct(data);
+        }
+
+        function showPaymentModal() {
+            // Ambil URL QRIS dari backend
+            google.script.run.withSuccessHandler(function(res) {
+                document.getElementById('qrisImage').src = res.url;
+                document.getElementById('modalPayment').style.display = 'flex';
+            }).getQrisImage();
+        }
+
+        function submitPayment() {
+            const fileInput = document.getElementById('buktiTf');
+            if (fileInput.files.length === 0) {
+                alert("Pilih file bukti transfer terlebih dahulu!");
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+
+            document.getElementById('paymentStatus').innerText = "Sedang mengunggah...";
+
+            reader.onload = function(e) {
+                const data = {
+                    productId: currentProductId,
+                    namaPenitip: document.getElementById('namaPenitip').value,
+                    buktiTransfer: e.target.result // Base64 string
+                };
+
+                google.script.run
+                    .withSuccessHandler(function(res) {
+                        if (res.success) {
+                            alert("Sukses! Produk Anda akan aktif setelah diverifikasi admin.");
+                            goHome();
+                        } else {
+                            alert("Gagal: " + res.message);
+                        }
+                    })
+                    .uploadPayment(data);
+            };
+            reader.readAsDataURL(file);
+        }
+    </script>
+</body>
+</html>
