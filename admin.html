@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Titipin 7</title>
+    <style>
+        :root {
+            --primary-green: #1a5d1a;
+            --secondary-green: #2d8b2d;
+            --light-bg: #f4f7f4;
+            --text-dark: #2c3e50;
+            --white: #ffffff;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            --danger: #e74c3c;
+            --warning: #f1c40f;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            color: var(--text-dark);
+        }
+
+        /* Login Page Style */
+        #loginPage {
+            display: flex;
+            height: 100vh;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary-green);
+        }
+
+        .login-card {
+            background: var(--white);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .login-card h2 {
+            margin-bottom: 20px;
+            color: var(--primary-green);
+        }
+
+        /* Dashboard Layout */
+        #adminDashboard {
+            display: none;
+            flex-direction: row;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: var(--primary-green);
+            color: white;
+            padding: 30px 20px;
+            position: fixed;
+            height: 100vh;
+            transition: 0.3s;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            flex: 1;
+            padding: 40px;
+        }
+
+        .sidebar h2 {
+            font-size: 1.5rem;
+            margin-bottom: 40px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            padding-bottom: 15px;
+        }
+
+        .nav-item {
+            padding: 15px;
+            border-radius: 12px;
+            cursor: pointer;
+            margin-bottom: 10px;
+            transition: 0.3s;
+            font-weight: 600;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: rgba(255,255,255,0.15);
+        }
+
+        /* Components */
+        .card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+        }
+
+        h1 { color: var(--primary-green); margin-bottom: 25px; }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th {
+            background: #f8f9fa;
+            text-align: left;
+            padding: 15px;
+            border-bottom: 2px solid #eee;
+            color: #7f8c8d;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            font-size: 0.95rem;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 10px 18px;
+            border-radius: 10px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary { background: var(--primary-green); color: white; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-warning { background: var(--warning); color: black; }
+
+        .btn:hover { opacity: 0.9; transform: translateY(-2px); }
+
+        input[type="password"], select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #eee;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            outline: none;
+        }
+
+        input:focus { border-color: var(--primary-green); }
+
+        .badge {
+            padding: 5px 10px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-success { background: #d4edda; color: #155724; }
+
+        .preview-link {
+            color: var(--secondary-green);
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.85rem;
+        }
+
+        .section { display: none; }
+        .section.active { display: block; }
+
+        @media (max-width: 768px) {
+            .sidebar { width: 100%; position: relative; height: auto; }
+            #adminDashboard { flex-direction: column; }
+            .main-content { margin-left: 0; padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HALAMAN LOGIN -->
+    <div id="loginPage">
+        <div class="login-card">
+            <h2>Admin Login</h2>
+            <p style="margin-bottom: 20px; color: #666;">Silakan masukkan kata sandi petugas</p>
+            <input type="password" id="passInput" placeholder="Password">
+            <button class="btn btn-primary" style="width: 100%;" onclick="checkLogin()">Masuk Dashboard</button>
+            <p id="errorMsg" style="color: var(--danger); margin-top: 15px; display: none; font-size: 0.9rem;">Password salah!</p>
+        </div>
+    </div>
+
+    <!-- DASHBOARD ADMIN -->
+    <div id="adminDashboard">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h2>Titipin 7</h2>
+            <div class="nav-item active" onclick="switchSection('verifySection', this)">Verifikasi Bayar</div>
+            <div class="nav-item" onclick="switchSection('codSection', this)">Pesanan COD</div>
+            <div class="nav-item" onclick="switchSection('productSection', this)">Produk Aktif</div>
+            <div class="nav-item" style="margin-top: 50px; color: #ff9999;" onclick="location.reload()">Logout</div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            
+            <!-- Section 1: Verifikasi Pembayaran -->
+            <div id="verifySection" class="section active">
+                <h1>Verifikasi Pembayaran</h1>
+                <div class="card">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Nama Penitip</th>
+                                    <th>Produk</th>
+                                    <th>Bukti</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="paymentTableBody">
+                                <tr><td colspan="4" style="text-align:center">Memuat data...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 2: Pesanan COD Aktif -->
+            <div id="codSection" class="section">
+                <h1>Pesanan COD Aktif</h1>
+                <div class="card">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Pembeli</th>
+                                    <th>Produk</th>
+                                    <th>Kelas</th>
+                                    <th>Waktu & Tempat</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="orderTableBody">
+                                <tr><td colspan="5" style="text-align:center">Memuat data...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 3: Produk Aktif -->
+            <div id="productSection" class="section">
+                <h1>Daftar Produk Aktif</h1>
+                <div class="card">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Nama Produk</th>
+                                    <th>Kategori</th>
+                                    <th>Stok</th>
+                                    <th>Penitip</th>
+                                </tr>
+                            </thead>
+                            <tbody id="productTableBody">
+                                <tr><td colspan="4" style="text-align:center">Memuat data...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // LOGIKA LOGIN
+        function checkLogin() {
+            const pass = document.getElementById('passInput').value;
+            const error = document.getElementById('errorMsg');
+            
+            if (pass === 'sman7') {
+                document.getElementById('loginPage').style.display = 'none';
+                document.getElementById('adminDashboard').style.display = 'flex';
+                // Load data awal
+                loadAllData();
+            } else {
+                error.style.display = 'block';
+                setTimeout(() => { error.style.display = 'none'; }, 2000);
+            }
+        }
+
+        // NAVIGASI
+        function switchSection(id, el) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            
+            document.getElementById(id).classList.add('active');
+            el.classList.add('active');
+        }
+
+        // LOAD DATA
+        function loadAllData() {
+            loadPayments();
+            loadOrders();
+            loadProducts();
+        }
+
+        // 1. Verifikasi Pembayaran
+        function loadPayments() {
+            if (typeof google !== 'undefined') {
+                google.script.run.withSuccessHandler(renderPayments).getPendingPayments();
+            } else {
+                // Mock data untuk preview
+                renderPayments([
+                    {paymentId: 'P1', namaPenitip: 'Budi Santoso', namaProduk: 'Es Teh', buktiTransfer: '#'}
+                ]);
+            }
+        }
+
+        function renderPayments(data) {
+            const tbody = document.getElementById('paymentTableBody');
+            tbody.innerHTML = '';
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center">Tidak ada data pending</td></tr>';
+                return;
+            }
+            data.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${item.namaPenitip}</td>
+                    <td>${item.namaProduk}</td>
+                    <td><a href="${item.buktiTransfer}" target="_blank" class="preview-link">Lihat Bukti</a></td>
+                    <td>
+                        <button class="btn btn-primary" onclick="verifyPay('${item.paymentId}', 'ACC')">ACC</button>
+                        <button class="btn btn-danger" onclick="verifyPay('${item.paymentId}', 'Reject')">Reject</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function verifyPay(id, status) {
+            if (typeof google !== 'undefined') {
+                google.script.run.withSuccessHandler(() => {
+                    alert("Berhasil diperbarui");
+                    loadPayments();
+                    loadProducts();
+                }).verifyPayment(id, status);
+            } else {
+                alert("Mode Preview: " + status + " berhasil");
+            }
+        }
+
+        // 2. Pesanan COD
+        function loadOrders() {
+            if (typeof google !== 'undefined') {
+                google.script.run.withSuccessHandler(renderOrders).getOrders();
+            } else {
+                renderOrders([
+                    {orderId: 'O1', namaPembeli: 'Rina', produk: 'Cireng', kelas: 'XII MIPA 1', tanggalCOD: '27/10', tempatCOD: 'Patung Naga', status: 'Pending'}
+                ]);
+            }
+        }
+
+        function renderOrders(data) {
+            const tbody = document.getElementById('orderTableBody');
+            tbody.innerHTML = '';
+            data.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${item.namaPembeli}</td>
+                    <td>${item.produk}</td>
+                    <td>${item.kelas}</td>
+                    <td><small>${item.tanggalCOD} @ ${item.tempatCOD}</small></td>
+                    <td>
+                        <select onchange="updateStatus('${item.orderId}', this.value)">
+                            <option value="Pending" ${item.status=='Pending'?'selected':''}>Pending</option>
+                            <option value="Siap COD" ${item.status=='Siap COD'?'selected':''}>Siap COD</option>
+                            <option value="Selesai" ${item.status=='Selesai'?'selected':''}>Selesai</option>
+                            <option value="Batal" ${item.status=='Batal'?'selected':''}>Batal</option>
+                        </select>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function updateStatus(id, status) {
+            if (typeof google !== 'undefined') {
+                google.script.run.updateOrderStatus(id, status);
+            } else {
+                console.log("Status update: " + status);
+            }
+        }
+
+        // 3. Produk Aktif
+        function loadProducts() {
+            if (typeof google !== 'undefined') {
+                google.script.run.withSuccessHandler(renderProducts).getActiveProducts();
+            } else {
+                renderProducts([
+                    {namaProduk: 'Es Teh', kategori: 'Minuman', stok: 10, namaPenitip: 'Budi'}
+                ]);
+            }
+        }
+
+        function renderProducts(data) {
+            const tbody = document.getElementById('productTableBody');
+            tbody.innerHTML = '';
+            data.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${item.namaProduk}</strong></td>
+                    <td>${item.kategori}</td>
+                    <td>${item.stok}</td>
+                    <td>${item.namaPenitip}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+    </script>
+</body>
+</html>
